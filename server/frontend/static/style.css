@@ -1,0 +1,193 @@
+img{
+  width: 60%;
+  align-self: center;
+}
+
+.about-header {
+  margin: 40px auto;
+  padding: 20px;
+  max-width: 800px;
+  text-align: center;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+}
+.about-header img {
+  margin-top: 20px;
+  border-radius: 8px;
+}
+
+
+.card{
+  border: rgb(103, 102, 105) 3px solid;
+  display: flex;  
+  flex-direction: column;
+  margin-left:5%;
+  margin-right:5%;
+  margin-top: 1%;
+  margin-bottom: 1%;
+}
+
+.row{
+  display: flex;  
+  flex: 1;
+  flex-direction: row;
+  margin: auto;
+  margin-top: 1%;
+  justify-content: center;
+  padding:20px;
+}
+
+.container{
+  justify-content: center;
+}
+.details{
+  font-size: 20px;
+  color: rgb(97, 64, 128);
+  padding:20px;
+}
+
+.title{
+  font-size: 20px;
+  background-color: rgb(97, 64, 128);
+  color: white;
+  text-align: center;
+  margin:20px;
+  padding:5px;
+}
+
+.homepage_links{
+  color:  rgb(97, 64, 128);
+  padding: 25%;
+  font-size: larger;
+  }
+
+.loginlink{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.banner{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex:1
+}
+
+.form_panel {
+  padding:2%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 50px;
+  text-align:center;
+  box-shadow: 2px 2px 2px 3px #999;
+  margin: auto;
+  min-width: 350px;
+  width: 80%;
+  margin-top:3%;
+  background-color: black;
+}
+
+.navitems{
+  display: flex;
+  flex-direction: row;
+  padding: 20px;
+  flex: 1;
+  justify-content: flex-start;
+  justify-self: center;
+}
+
+.nav_item{
+  margin-left:15px;
+  font-size: 20px;
+  color: black;
+  align-self: center;
+}
+
+.username{
+  font: 30px sans-serif;
+  color:black;
+  justify-content: 'flex-end';
+  align-self:flex-end;
+  vertical-align: middle;
+}
+
+.input_panel {
+  display: flex;
+  flex-direction: row;
+  padding: 20px;
+  flex: 1;
+  justify-content:flex-end;
+  align-items: flex-end;
+  vertical-align: middle;
+}
+
+.small_header{
+  font: 30px sans-serif;
+  color:black;
+  margin: .5cm;
+}
+
+.img_icon {
+  align-self: center;
+    width:40px;
+    background-color:#0C9;
+    color:#FFF;
+    border-radius:50px;
+    text-align:center;
+    box-shadow: 2px 2px 3px #999;  
+}
+
+/* ===== Contact Page Specific Styles ===== */
+.contact-page .container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    text-align: center;
+    border: 2px solid #ccc;
+}
+
+.contact-page .sample-text {
+    font-size: 60px;
+    color: #00c9c9;
+    margin-bottom: 10px;
+}
+
+.contact-page .contact-icon {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+.contact-page .contact-info {
+    font-size: 16px;
+    text-align: left;
+    line-height: 1.6;
+    margin-top: 20px;
+}
+
+.contact-page .contact-info a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.contact-container {
+  margin: 50px auto;
+  padding: 30px;
+  max-width: 700px;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  text-align: left;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.contact-container h1 {
+  margin-bottom: 20px;
+  color: #333;
+}
+.contact-container p {
+  font-size: 16px;
+  margin: 10px 0;
+}
