@@ -11,6 +11,8 @@
 from django.contrib.auth import logout
 from django.http import JsonResponse
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 import logging
 import json
 from django.views.decorators.csrf import csrf_exempt
@@ -118,15 +120,26 @@ def get_dealer_details(request, dealer_id):
 
 # Create a `add_review` view to submit a review
 # def add_review(request):
+@csrf_exempt
 def add_review(request):
+    print(f"add_review called - Method: {request.method}, User: {request.user}")
+    print(f"User is anonymous: {request.user.is_anonymous}")
+    
+    if request.method != 'POST':
+        return JsonResponse({"status":400,"message":"Only POST method allowed"})
+    
     if(request.user.is_anonymous == False):
-        data = json.loads(request.body)
         try:
+            data = json.loads(request.body)
+            print(f"Review data received: {data}")
             response = post_review(data)
+            print(f"Backend response: {response}")
             return JsonResponse({"status":200})
-        except:
+        except Exception as e:
+            print(f"Error in posting review: {str(e)}")
             return JsonResponse({"status":401,"message":"Error in posting review"})
     else:
+        print("User is not authenticated")
         return JsonResponse({"status":403,"message":"Unauthorized"})
 
 # Create a get_cars view to get list of cars

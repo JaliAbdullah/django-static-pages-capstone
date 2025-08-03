@@ -22,11 +22,22 @@ const PostReview = () => {
   let carmodels_url = root_url+`djangoapp/get_cars`;
 
   const postreview = async ()=>{
+    console.log("Post review button clicked");
+    
     let name = sessionStorage.getItem("firstname")+" "+sessionStorage.getItem("lastname");
+    console.log("Session storage contents:", {
+      firstname: sessionStorage.getItem("firstname"),
+      lastname: sessionStorage.getItem("lastname"),
+      username: sessionStorage.getItem("username")
+    });
+    
     //If the first and second name are stores as null, use the username
     if(name.includes("null")) {
       name = sessionStorage.getItem("username");
     }
+    
+    console.log("Final name:", name);
+    
     if(!model || review === "" || date === "" || year === "" || model === "") {
       alert("All details are mandatory")
       return;
@@ -38,13 +49,13 @@ const PostReview = () => {
 
     let jsoninput = JSON.stringify({
       "name": name,
-      "dealership": id,
+      "dealership": parseInt(id),
       "review": review,
       "purchase": true,
       "purchase_date": date,
       "car_make": make_chosen,
       "car_model": model_chosen,
-      "car_year": year,
+      "car_year": parseInt(year),
     });
 
     console.log(jsoninput);
@@ -57,8 +68,11 @@ const PostReview = () => {
   });
 
   const json = await res.json();
+  console.log("Response from server:", json);
   if (json.status === 200) {
       window.location.href = window.location.origin+"/dealer/"+id;
+  } else {
+      alert("Error posting review: " + (json.message || "Unknown error"));
   }
 
   }
@@ -110,7 +124,7 @@ const PostReview = () => {
       </div >
 
       <div className='input_field'>
-      Car Year <input type="int" onChange={(e) => setYear(e.target.value)} max={2023} min={2015}/>
+      Car Year <input type="number" onChange={(e) => setYear(e.target.value)} max={2023} min={2015}/>
       </div>
 
       <div>
