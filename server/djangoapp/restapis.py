@@ -1,14 +1,18 @@
 import os
+from urllib.parse import quote, urlencode
+
 import requests
 from dotenv import load_dotenv
-from urllib.parse import urlencode, quote
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Load backend and sentiment analyzer URLs
 backend_url = os.getenv("backend_url", default="http://localhost:3030")
-sentiment_analyzer_url = os.getenv("sentiment_analyzer_url", default="http://localhost:5000/")
+sentiment_analyzer_url = os.getenv(
+    "sentiment_analyzer_url", default="http://localhost:5000/"
+)
+
 
 # Function to send GET request to the backend API
 def get_request(endpoint, **kwargs):
@@ -26,6 +30,7 @@ def get_request(endpoint, **kwargs):
         print(f"Network exception occurred: {err}")
         return {"error": "Network exception occurred"}
 
+
 # Function to call sentiment analyzer API
 def analyze_review_sentiments(text):
     try:
@@ -38,6 +43,7 @@ def analyze_review_sentiments(text):
     except requests.RequestException as err:
         print(f"Sentiment analysis exception: {err}")
         return {"error": "Sentiment analysis failed"}
+
 
 # Function to post review data to the backend API
 def post_review(data_dict):

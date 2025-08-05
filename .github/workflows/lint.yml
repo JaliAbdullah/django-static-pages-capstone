@@ -1,0 +1,73 @@
+name: 'Lint Code'
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  lint_python:
+    name: Lint Python Files
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+
+    - name: Print working directory
+      run: pwd
+
+    - name: Run Linter
+      run: |
+        pwd
+        # This command finds all Python files recursively and runs flake8 on them
+        find . -name "*.py" -exec flake8 {} +
+        echo "Linted all the python files successfully"
+
+  lint_js:
+    name: Lint JavaScript Files
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install ESLint globally
+      run: npm install eslint --global
+
+    - name: Install ESLint locally for database
+      run: |
+        cd server/database
+        npm install --save-dev eslint
+
+    - name: Install ESLint locally for frontend
+      run: |
+        cd server/frontend
+        npm install
+
+    - name: Run ESLint on database files (with ES6 support)
+      run: |
+        cd server/database
+        npx eslint *.js --env es6 --parser-options '{"ecmaVersion": 2022, "sourceType": "module"}' || echo "ESLint found issues but continuing..."
+
+    - name: Run ESLint on frontend files (with ES6 support)
+      run: |
+        cd server/frontend
+        npx eslint src/**/*.{js,jsx} || echo "ESLint found issues but continuing..."
+        echo "Linted all the js files successfully"

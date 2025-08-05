@@ -1,0 +1,33 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "react-app",
+    "react-app/jest"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "plugins": ["react"],
+  "rules": {
+    "no-unused-vars": ["warn", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
+    "no-console": "off",
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "linebreak-style": "off"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}
