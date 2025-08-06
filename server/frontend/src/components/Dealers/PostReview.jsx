@@ -12,6 +12,7 @@ const PostReview = () => {
   const [year, setYear] = useState("");
   const [date, setDate] = useState("");
   const [carmodels, setCarmodels] = useState([]);
+  const [purchase, setPurchase] = useState(true);
 
   let curr_url = window.location.href;
   let root_url = curr_url.substring(0,curr_url.indexOf("postreview"));
@@ -38,24 +39,34 @@ const PostReview = () => {
     
     console.log("Final name:", name);
     
-    if(!model || review === "" || date === "" || year === "" || model === "") {
-      alert("All details are mandatory")
+    if(review === "" || date === "") {
+      alert("Review and date are mandatory")
+      return;
+    }
+    
+    if(purchase && (!model || year === "" || model === "")) {
+      alert("Car details are mandatory for purchase reviews")
       return;
     }
 
-    let model_split = model.split(" ");
-    let make_chosen = model_split[0];
-    let model_chosen = model_split[1];
+    let make_chosen = "";
+    let model_chosen = "";
+    
+    if(purchase && model) {
+      let model_split = model.split(" ");
+      make_chosen = model_split[0];
+      model_chosen = model_split[1];
+    }
 
     let jsoninput = JSON.stringify({
       "name": name,
       "dealership": parseInt(id),
       "review": review,
-      "purchase": true,
+      "purchase": purchase,
       "purchase_date": date,
-      "car_make": make_chosen,
-      "car_model": model_chosen,
-      "car_year": parseInt(year),
+      "car_make": make_chosen || "",
+      "car_model": model_chosen || "",
+      "car_year": purchase && year ? parseInt(year) : 0,
     });
 
     console.log(jsoninput);
@@ -111,21 +122,50 @@ const PostReview = () => {
       <h1 style={{color:"darkblue"}}>{dealer.full_name}</h1>
       <textarea id='review' cols='50' rows='7' onChange={(e) => setReview(e.target.value)}></textarea>
       <div className='input_field'>
-      Purchase Date <input type="date" onChange={(e) => setDate(e.target.value)}/>
+      {purchase ? 'Purchase Date' : 'Visit Date'} <input type="date" onChange={(e) => setDate(e.target.value)}/>
       </div>
+      
       <div className='input_field'>
-      Car Make 
-      <select name="cars" id="cars" onChange={(e) => setModel(e.target.value)}>
-      <option value="" selected disabled hidden>Choose Car Make and Model</option>
-      {carmodels.map(carmodel => (
-          <option value={carmodel.CarMake+" "+carmodel.CarModel}>{carmodel.CarMake} {carmodel.CarModel}</option>
-      ))}
-      </select>        
-      </div >
+      Did you purchase this car? 
+      <label style={{marginLeft: '10px'}}>
+        <input 
+          type="radio" 
+          value={true} 
+          checked={purchase === true} 
+          onChange={() => setPurchase(true)}
+          style={{marginRight: '5px'}}
+        />
+        Yes
+      </label>
+      <label style={{marginLeft: '20px'}}>
+        <input 
+          type="radio" 
+          value={false} 
+          checked={purchase === false} 
+          onChange={() => setPurchase(false)}
+          style={{marginRight: '5px'}}
+        />
+        No
+      </label>
+      </div>
+      
+      {purchase && (
+        <>
+          <div className='input_field'>
+          Car Make 
+          <select name="cars" id="cars" onChange={(e) => setModel(e.target.value)}>
+          <option value="" selected disabled hidden>Choose Car Make and Model</option>
+          {carmodels.map(carmodel => (
+              <option value={carmodel.CarMake+" "+carmodel.CarModel}>{carmodel.CarMake} {carmodel.CarModel}</option>
+          ))}
+          </select>        
+          </div >
 
-      <div className='input_field'>
-      Car Year <input type="number" onChange={(e) => setYear(e.target.value)} max={2023} min={2015}/>
-      </div>
+          <div className='input_field'>
+          Car Year <input type="number" onChange={(e) => setYear(e.target.value)} max={2023} min={2015}/>
+          </div>
+        </>
+      )}
 
       <div>
       <button className='postreview' onClick={postreview}>Post Review</button>

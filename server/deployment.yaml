@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: dealership
+  name: dealership
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: dealership
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: dealership
+    spec:
+      containers:
+      - image: jali007/dealership:v2   # ✅ your Docker Hub image
+        imagePullPolicy: Always
+        name: dealership
+        ports:
+        - containerPort: 8000              # ✅ your backend port (updated to match app)
+          protocol: TCP
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dealership-service
+spec:
+  selector:
+    run: dealership
+  ports:
+    - protocol: TCP
+      port: 80              # External port
+      targetPort: 8000      # Container app port (updated to match app)
+  type: NodePort            # ✅ Use NodePort for Docker Desktop access

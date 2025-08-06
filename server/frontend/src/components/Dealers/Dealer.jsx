@@ -42,6 +42,7 @@ const Dealer = () => {
     const retobj = await res.json();
     
     if(retobj.status === 200) {
+      console.log("Reviews received:", retobj.reviews); // Debug log
       if(retobj.reviews.length > 0){
         setReviews(retobj.reviews)
       } else {
@@ -51,6 +52,7 @@ const Dealer = () => {
   }
 
   const senti_icon = (sentiment)=>{
+    console.log("Sentiment received:", sentiment); // Debug log
     let icon = sentiment === "positive"?positive_icon:sentiment==="negative"?negative_icon:neutral_icon;
     return icon;
   }
