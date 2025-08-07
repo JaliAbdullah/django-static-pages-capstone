@@ -73,7 +73,8 @@ class Review(models.Model):
     car_make = models.CharField(max_length=50)
     car_model = models.CharField(max_length=50)
     car_year = models.IntegerField()
-    sentiment = models.CharField(max_length=20, blank=True, null=True)  # For sentiment analysis
+    # For sentiment analysis
+    sentiment = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return f"Review by {self.name} for dealership {self.dealership}"

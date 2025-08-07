@@ -298,7 +298,7 @@ def fetch_reviews_by_dealer(request, dealer_id):
                 sentiment = analyze_sentiment_local(review.review)
                 review.sentiment = sentiment
                 review.save()
-            
+
             reviews_list.append({
                 'id': review.id,
                 'name': review.name,
@@ -322,16 +322,16 @@ def insert_review(request):
     """Insert a new review"""
     try:
         data = json.loads(request.body)
-        
+
         # Get the next available ID
         last_review = Review.objects.order_by('-id').first()
         new_id = (last_review.id + 1) if last_review else 1
-        
+
         # Analyze sentiment
         sentiment = None
         if sentiment_analyzer and data.get('review'):
             sentiment = analyze_sentiment_local(data['review'])
-        
+
         review = Review.objects.create(
             id=new_id,
             name=data.get('name', ''),

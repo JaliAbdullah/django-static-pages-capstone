@@ -9,15 +9,18 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Path to the data files
-        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-        dealerships_file = os.path.join(base_dir, 'database', 'data', 'dealerships.json')
-        reviews_file = os.path.join(base_dir, 'database', 'data', 'reviews.json')
+        base_dir = os.path.dirname(os.path.dirname(
+            os.path.dirname(os.path.dirname(__file__))))
+        dealerships_file = os.path.join(
+            base_dir, 'database', 'data', 'dealerships.json')
+        reviews_file = os.path.join(
+            base_dir, 'database', 'data', 'reviews.json')
 
         # Load dealerships
         if os.path.exists(dealerships_file):
             with open(dealerships_file, 'r') as f:
                 dealerships_data = json.load(f)
-                
+
             for dealership_data in dealerships_data['dealerships']:
                 dealership, created = Dealership.objects.get_or_create(
                     id=dealership_data['id'],
@@ -34,17 +37,22 @@ class Command(BaseCommand):
                     }
                 )
                 if created:
-                    self.stdout.write(f"Created dealership: {dealership.short_name}")
-                    
-            self.stdout.write(self.style.SUCCESS(f'Successfully loaded {len(dealerships_data["dealerships"])} dealerships'))
+                    self.stdout.write(
+                        f"Created dealership: {dealership.short_name}")
+
+            success_msg = (f'Successfully loaded '
+                           f'{len(dealerships_data["dealerships"])} '
+                           f'dealerships')
+            self.stdout.write(self.style.SUCCESS(success_msg))
         else:
-            self.stdout.write(self.style.ERROR(f'Dealerships file not found: {dealerships_file}'))
+            error_msg = f'Dealerships file not found: {dealerships_file}'
+            self.stdout.write(self.style.ERROR(error_msg))
 
         # Load reviews
         if os.path.exists(reviews_file):
             with open(reviews_file, 'r') as f:
                 reviews_data = json.load(f)
-                
+
             for review_data in reviews_data['reviews']:
                 review, created = Review.objects.get_or_create(
                     id=review_data['id'],
@@ -60,8 +68,13 @@ class Command(BaseCommand):
                     }
                 )
                 if created:
-                    self.stdout.write(f"Created review: {review.name} - {review.review[:50]}...")
-                    
-            self.stdout.write(self.style.SUCCESS(f'Successfully loaded {len(reviews_data["reviews"])} reviews'))
+                    review_text = review.review[:50]
+                    self.stdout.write(
+                        f"Created review: {review.name} - {review_text}...")
+
+            success_msg = (f'Successfully loaded '
+                           f'{len(reviews_data["reviews"])} reviews')
+            self.stdout.write(self.style.SUCCESS(success_msg))
         else:
-            self.stdout.write(self.style.ERROR(f'Reviews file not found: {reviews_file}'))
+            error_msg = f'Reviews file not found: {reviews_file}'
+            self.stdout.write(self.style.ERROR(error_msg))

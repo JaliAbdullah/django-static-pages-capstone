@@ -9,9 +9,11 @@ load_dotenv()
 
 # Load backend and sentiment analyzer URLs
 # For production, these will point to Django's own endpoints
-backend_url = os.getenv("backend_url", default="http://localhost:8000/djangoapp/api")
+backend_url = os.getenv("backend_url",
+                        default="http://localhost:8000/djangoapp/api")
 sentiment_analyzer_url = os.getenv(
-    "sentiment_analyzer_url", default="http://localhost:8000/djangoapp/api/"
+    "sentiment_analyzer_url",
+    default="http://localhost:8000/djangoapp/api/"
 )
 
 
