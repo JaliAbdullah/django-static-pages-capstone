@@ -1,9 +1,0 @@
-requests
-Django==5.2.4
-Pillow
-gunicorn
-python-dotenv
-whitenoise
-psycopg2-binary
-dj-database-url
-nltk
