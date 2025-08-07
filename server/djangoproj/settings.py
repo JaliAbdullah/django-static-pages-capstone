@@ -12,17 +12,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv(
-    "SECRET_KEY", 
+    "SECRET_KEY",
     "django-insecure-ccow$tz_=9%dxu4(0%^(z%nx32#s@(zt9$ih@)5l54yny)wm-0"
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-# Allow all hosts for deployment (you can restrict this later with your actual domain)
+# Allow all hosts for deployment (you can restrict this later)
 ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost", 
+    "http://localhost",
     "http://127.0.0.1",
     "https://*.onrender.com"  # Add Render domains
 ]
@@ -149,6 +149,12 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
