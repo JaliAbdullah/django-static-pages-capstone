@@ -344,7 +344,7 @@ def insert_review(request):
             car_year=data.get('car_year', 2020),
             sentiment=sentiment,
         )
-        
+
         return JsonResponse({
             'id': review.id,
             'name': review.name,
@@ -368,7 +368,7 @@ def analyze_sentiment_view(request, text):
         # URL decode the text
         decoded_text = unquote(text)
         sentiment = analyze_sentiment_local(decoded_text)
-        
+
         return JsonResponse({
             'text': decoded_text,
             'sentiment': sentiment,
@@ -382,11 +382,11 @@ def analyze_sentiment_local(text):
     """Local sentiment analysis function"""
     if not sentiment_analyzer:
         return "neutral"
-    
+
     try:
         scores = sentiment_analyzer.polarity_scores(text)
         compound = scores['compound']
-        
+
         if compound >= 0.05:
             return "positive"
         elif compound <= -0.05:
