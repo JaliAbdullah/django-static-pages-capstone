@@ -26,7 +26,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1",
     "https://*.onrender.com",  # Keep Render domains for compatibility
     "https://*.railway.app",   # Add Railway domains
-    "https://*.up.railway.app" # Add Railway preview domains
+    "https://*.up.railway.app"  # Add Railway preview domains
 ]
 
 # REST framework config (optional)
