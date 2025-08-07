@@ -8,9 +8,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Load backend and sentiment analyzer URLs
-backend_url = os.getenv("backend_url", default="http://localhost:3030")
+# For production, these will point to Django's own endpoints
+backend_url = os.getenv("backend_url", default="http://localhost:8000/djangoapp/api")
 sentiment_analyzer_url = os.getenv(
-    "sentiment_analyzer_url", default="http://localhost:5000/"
+    "sentiment_analyzer_url", default="http://localhost:8000/djangoapp/api/"
 )
 
 

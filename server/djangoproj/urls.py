@@ -15,6 +15,7 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("djangoapp/", include("djangoapp.urls")),
+    path("api/", include("djangoapp.urls")),  # Add API routes
     path("", TemplateView.as_view(template_name="Home.html")),
     path("about/", TemplateView.as_view(template_name="About.html")),
     path("contact/", TemplateView.as_view(template_name="Contact.html")),

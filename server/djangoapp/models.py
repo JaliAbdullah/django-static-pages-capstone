@@ -43,3 +43,37 @@ class CarModel(models.Model):
     def __str__(self):
         # Return the car make and car model
         return f"{self.car_make.name} {self.name}"
+
+
+class Dealership(models.Model):
+    """Model for car dealerships"""
+    id = models.IntegerField(primary_key=True)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    st = models.CharField(max_length=5)  # State abbreviation
+    address = models.CharField(max_length=200)
+    zip = models.CharField(max_length=10)
+    lat = models.FloatField()
+    long = models.FloatField()
+    full_name = models.CharField(max_length=200)
+    short_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.short_name} - {self.city}, {self.st}"
+
+
+class Review(models.Model):
+    """Model for car reviews"""
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
+    dealership = models.IntegerField()  # Reference to dealership ID
+    review = models.TextField()
+    purchase = models.BooleanField()
+    purchase_date = models.CharField(max_length=20)
+    car_make = models.CharField(max_length=50)
+    car_model = models.CharField(max_length=50)
+    car_year = models.IntegerField()
+    sentiment = models.CharField(max_length=20, blank=True, null=True)  # For sentiment analysis
+
+    def __str__(self):
+        return f"Review by {self.name} for dealership {self.dealership}"

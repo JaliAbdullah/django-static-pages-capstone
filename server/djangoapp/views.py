@@ -10,15 +10,30 @@
 
 import json
 import logging
+from urllib.parse import unquote
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
-from .models import CarMake, CarModel
+from .models import CarMake, CarModel, Dealership, Review
 from .populate import initiate
 from .restapis import analyze_review_sentiments, get_request, post_review
+
+# Import for sentiment analysis
+try:
+    from nltk.sentiment import SentimentIntensityAnalyzer
+    import nltk
+    # Download VADER lexicon if not present
+    try:
+        nltk.data.find('vader_lexicon')
+    except LookupError:
+        nltk.download('vader_lexicon')
+    sentiment_analyzer = SentimentIntensityAnalyzer()
+except ImportError:
+    sentiment_analyzer = None
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -168,3 +183,216 @@ def get_cars(request):
             {"CarModel": car_model.name, "CarMake": car_model.car_make.name}
         )
     return JsonResponse({"CarModels": cars})
+
+
+# ============================================================================
+# NEW API ENDPOINTS TO REPLACE NODE.JS SERVICE
+# ============================================================================
+
+@csrf_exempt
+def fetch_dealers(request):
+    """Fetch all dealerships"""
+    try:
+        dealerships = Dealership.objects.all()
+        dealers_list = []
+        for dealer in dealerships:
+            dealers_list.append({
+                'id': dealer.id,
+                'city': dealer.city,
+                'state': dealer.state,
+                'st': dealer.st,
+                'address': dealer.address,
+                'zip': dealer.zip,
+                'lat': dealer.lat,
+                'long': dealer.long,
+                'full_name': dealer.full_name,
+                'short_name': dealer.short_name,
+            })
+        return JsonResponse(dealers_list, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+def fetch_dealers_by_state(request, state):
+    """Fetch dealerships by state"""
+    try:
+        dealerships = Dealership.objects.filter(state=state)
+        dealers_list = []
+        for dealer in dealerships:
+            dealers_list.append({
+                'id': dealer.id,
+                'city': dealer.city,
+                'state': dealer.state,
+                'st': dealer.st,
+                'address': dealer.address,
+                'zip': dealer.zip,
+                'lat': dealer.lat,
+                'long': dealer.long,
+                'full_name': dealer.full_name,
+                'short_name': dealer.short_name,
+            })
+        return JsonResponse(dealers_list, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+def fetch_dealer_by_id(request, dealer_id):
+    """Fetch a specific dealer by ID"""
+    try:
+        dealer = Dealership.objects.get(id=dealer_id)
+        dealer_data = {
+            'id': dealer.id,
+            'city': dealer.city,
+            'state': dealer.state,
+            'st': dealer.st,
+            'address': dealer.address,
+            'zip': dealer.zip,
+            'lat': dealer.lat,
+            'long': dealer.long,
+            'full_name': dealer.full_name,
+            'short_name': dealer.short_name,
+        }
+        return JsonResponse(dealer_data)
+    except Dealership.DoesNotExist:
+        return JsonResponse({'message': 'Dealer not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+def fetch_reviews(request):
+    """Fetch all reviews"""
+    try:
+        reviews = Review.objects.all()
+        reviews_list = []
+        for review in reviews:
+            reviews_list.append({
+                'id': review.id,
+                'name': review.name,
+                'dealership': review.dealership,
+                'review': review.review,
+                'purchase': review.purchase,
+                'purchase_date': review.purchase_date,
+                'car_make': review.car_make,
+                'car_model': review.car_model,
+                'car_year': review.car_year,
+                'sentiment': review.sentiment,
+            })
+        return JsonResponse(reviews_list, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+def fetch_reviews_by_dealer(request, dealer_id):
+    """Fetch reviews for a specific dealer"""
+    try:
+        reviews = Review.objects.filter(dealership=dealer_id)
+        reviews_list = []
+        for review in reviews:
+            # Analyze sentiment if not already done
+            sentiment = review.sentiment
+            if not sentiment and sentiment_analyzer:
+                sentiment = analyze_sentiment_local(review.review)
+                review.sentiment = sentiment
+                review.save()
+            
+            reviews_list.append({
+                'id': review.id,
+                'name': review.name,
+                'dealership': review.dealership,
+                'review': review.review,
+                'purchase': review.purchase,
+                'purchase_date': review.purchase_date,
+                'car_make': review.car_make,
+                'car_model': review.car_model,
+                'car_year': review.car_year,
+                'sentiment': sentiment,
+            })
+        return JsonResponse(reviews_list, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def insert_review(request):
+    """Insert a new review"""
+    try:
+        data = json.loads(request.body)
+        
+        # Get the next available ID
+        last_review = Review.objects.order_by('-id').first()
+        new_id = (last_review.id + 1) if last_review else 1
+        
+        # Analyze sentiment
+        sentiment = None
+        if sentiment_analyzer and data.get('review'):
+            sentiment = analyze_sentiment_local(data['review'])
+        
+        review = Review.objects.create(
+            id=new_id,
+            name=data.get('name', ''),
+            dealership=data.get('dealership', 0),
+            review=data.get('review', ''),
+            purchase=data.get('purchase', False),
+            purchase_date=data.get('purchase_date', ''),
+            car_make=data.get('car_make', ''),
+            car_model=data.get('car_model', ''),
+            car_year=data.get('car_year', 2020),
+            sentiment=sentiment,
+        )
+        
+        return JsonResponse({
+            'id': review.id,
+            'name': review.name,
+            'dealership': review.dealership,
+            'review': review.review,
+            'purchase': review.purchase,
+            'purchase_date': review.purchase_date,
+            'car_make': review.car_make,
+            'car_model': review.car_model,
+            'car_year': review.car_year,
+            'sentiment': review.sentiment,
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+def analyze_sentiment_view(request, text):
+    """Analyze sentiment of given text"""
+    try:
+        # URL decode the text
+        decoded_text = unquote(text)
+        sentiment = analyze_sentiment_local(decoded_text)
+        
+        return JsonResponse({
+            'text': decoded_text,
+            'sentiment': sentiment,
+            'label': sentiment  # For compatibility with existing frontend
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+def analyze_sentiment_local(text):
+    """Local sentiment analysis function"""
+    if not sentiment_analyzer:
+        return "neutral"
+    
+    try:
+        scores = sentiment_analyzer.polarity_scores(text)
+        compound = scores['compound']
+        
+        if compound >= 0.05:
+            return "positive"
+        elif compound <= -0.05:
+            return "negative"
+        else:
+            return "neutral"
+    except Exception as e:
+        print(f"Sentiment analysis error: {e}")
+        return "neutral"
